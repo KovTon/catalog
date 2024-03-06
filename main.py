@@ -1,10 +1,21 @@
 import sqlite3
 
 
-def add_user(name, email, age):
+def add_user(first_name, middle_name, last_name, email, age):
     connection = sqlite3.connect('pet_base.db')
     cursor = connection.cursor()
-    cursor.execute(f"INSERT INTO Users ( username, email, age) VALUES ('{name}', '{email}', {age})")
+    cursor.execute(f"""
+                   INSERT INTO Users (first_name,
+                                    middle_name,
+                                    last_name,
+                                    email, age)
+                   
+                   VALUES ( '{first_name}',
+                   '{middle_name}',
+                   '{last_name}',
+                   '{email}',
+                   {age})
+                   """)
     connection.commit()
     connection.close()
 
@@ -12,7 +23,7 @@ def add_user(name, email, age):
 def delet_user(queri):
     connection = sqlite3.connect('pet_base.db')
     cursor = connection.cursor()
-    cursor.execute(f"DELETE FROM Users WHERE username LIKE'%{queri}%' OR email LIKE '%{queri}%' OR age LIKE '{queri}'")
+    cursor.execute(f"DELETE FROM Users WHERE first_name LIKE'%{queri}%' OR email LIKE '%{queri}%' OR age LIKE '{queri}'")
     connection.commit()
     connection.close()
 
@@ -20,12 +31,15 @@ def delet_user(queri):
 def get_user(queri):
     connection = sqlite3.connect('pet_base.db')
     cursor = connection.cursor()
-    cursor.execute(f"SELECT * FROM Users WHERE username LIKE'%{queri}%' OR email LIKE '%{queri}%' OR age LIKE '{queri}' ")
+    cursor.execute(f"SELECT * FROM Users WHERE first_name LIKE'%{queri}%' OR email LIKE '%{queri}%' OR age LIKE '{queri}' ")
     search_results = cursor.fetchall()
 
     # Выводим результаты
-    for _ in search_results:
-        print(_)
+    if len(search_results) != 0:
+        for _ in search_results:
+            print(_)
+    else:
+        print('Запись не обнаружена.')
 
     connection.commit()
     connection.close()
@@ -41,14 +55,23 @@ choice = int()
 
 while choice != 4:
     print(functions)
-    print('Введите цифру')
-    choice = int(input())
+    try:
+        print('Введите число')
+        choice = int(input())
+    except ValueError:
+        print('Введите число от 1 до 4. Например: 1')
+
+    # if type(choice) is not int:
+        # print('Введите число. Например: 1')
 
     if choice == 1:
-        name = input('Введите имя: ')
+        print('Добавляем информацию о пользователе в базу.')
+        first_name = input('Введите имя: ')
+        middle_name = input('Введите фамилию: ')
+        last_name = input('Введите отчество: ')
         email = input('Введите email: ')
         age = int(input('Введите возраст: '))
-        add_user(name, email, age)
+        add_user(first_name, middle_name, last_name, email, age)
         print('Данные добавлены')
 
     elif choice == 2:
